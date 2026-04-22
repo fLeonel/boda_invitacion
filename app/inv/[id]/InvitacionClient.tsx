@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { Calendar, Clock, MapPin, Heart, Send, Sparkles, Church, PartyPopper } from "lucide-react";
+import { Calendar, Clock, MapPin, Heart, Send, Sparkles, Church, PartyPopper, ExternalLink, Pause, Play } from "lucide-react";
 
 type Invitado = {
   nombre: string;
@@ -10,16 +10,33 @@ type Invitado = {
   invitados: number;
 };
 
+type FloatingHeart = {
+  id: number;
+  left: number;
+  delay: number;
+  duration: number;
+  size: number;
+  opacity: number;
+  top: number;
+};
+
+function getDeterministicValue(seed: number) {
+  const value = Math.sin(seed * 12.9898) * 43758.5453;
+  return value - Math.floor(value);
+}
+
 // Floating hearts component - reduced amount
-const HEARTS_DATA = [...Array(8)].map((_, i) => ({
+const HEARTS_DATA: FloatingHeart[] = [...Array(8)].map((_, i) => ({
   id: i,
   left: 10 + (i * 12),
   delay: i * 1.5,
-  duration: 12 + Math.random() * 6,
-  size: 10 + Math.random() * 8,
-  opacity: 0.08 + Math.random() * 0.12,
-  top: 20 + Math.random() * 60,
+  duration: 12 + getDeterministicValue(i + 1) * 6,
+  size: 10 + getDeterministicValue(i + 11) * 8,
+  opacity: 0.08 + getDeterministicValue(i + 21) * 0.12,
+  top: 20 + getDeterministicValue(i + 31) * 60,
 }));
+
+const SONG_SRC = "/Que%20Te%20Quiero.mp3";
 
 function FloatingHearts() {
   return (
@@ -65,7 +82,10 @@ function FloatingHearts() {
 
 export default function InvitacionClient({ invitado }: { invitado: Invitado }) {
   const [scrollY, setScrollY] = useState(0);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [showAudioPrompt, setShowAudioPrompt] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -75,15 +95,101 @@ export default function InvitacionClient({ invitado }: { invitado: Invitado }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const audio = audioRef.current;
+
+    if (!audio) {
+      return;
+    }
+
+    audio.volume = 0.45;
+
+    const syncPlaybackState = () => {
+      setIsAudioPlaying(!audio.paused);
+    };
+
+    const tryStartPlayback = async () => {
+      try {
+        await audio.play();
+        setShowAudioPrompt(false);
+        syncPlaybackState();
+      } catch {
+        setShowAudioPrompt(true);
+      }
+    };
+
+    const handleFirstInteraction = () => {
+      void tryStartPlayback();
+    };
+
+    audio.addEventListener("play", syncPlaybackState);
+    audio.addEventListener("pause", syncPlaybackState);
+
+    void tryStartPlayback();
+    window.addEventListener("pointerdown", handleFirstInteraction, { once: true });
+    window.addEventListener("keydown", handleFirstInteraction, { once: true });
+
+    return () => {
+      audio.removeEventListener("play", syncPlaybackState);
+      audio.removeEventListener("pause", syncPlaybackState);
+      window.removeEventListener("pointerdown", handleFirstInteraction);
+      window.removeEventListener("keydown", handleFirstInteraction);
+    };
+  }, []);
+
+  const handleAudioToggle = async () => {
+    const audio = audioRef.current;
+
+    if (!audio) {
+      return;
+    }
+
+    if (audio.paused) {
+      try {
+        await audio.play();
+        setShowAudioPrompt(false);
+      } catch {
+        setShowAudioPrompt(true);
+      }
+      return;
+    }
+
+    audio.pause();
+    setShowAudioPrompt(false);
+  };
+
   const mensaje = encodeURIComponent(
     `Hola, soy ${invitado.nombre} ${invitado.apellido ?? ""}. Confirmo mi asistencia a la boda.`
   );
 
   return (
     <main ref={containerRef} className="relative min-h-screen bg-linear-to-br from-rose-50 via-white to-amber-50 overflow-x-hidden">
+      <audio ref={audioRef} src={SONG_SRC} loop preload="auto" />
+
       {/* Background gradients */}
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-rose-100/40 via-transparent to-transparent pointer-events-none" />
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_bottom_right,var(--tw-gradient-stops))] from-amber-100/30 via-transparent to-transparent pointer-events-none" />
+
+      {showAudioPrompt && (
+        <div className="fixed inset-x-4 top-4 z-30 rounded-2xl border border-rose-200 bg-white/90 px-4 py-3 text-center shadow-lg shadow-rose-100/50 backdrop-blur-sm md:left-1/2 md:right-auto md:w-104 md:-translate-x-1/2">
+          <p className="text-sm text-gray-700">
+            Toca cualquier parte de la invitacion o usa el boton de musica para reproducir la cancion.
+          </p>
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={() => {
+          void handleAudioToggle();
+        }}
+        className="fixed bottom-5 right-5 z-30 inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white/85 px-4 py-3 text-sm font-medium text-rose-600 shadow-lg shadow-rose-100/50 backdrop-blur-sm transition-transform duration-300 hover:-translate-y-0.5"
+        aria-pressed={isAudioPlaying}
+        aria-label={isAudioPlaying ? "Pausar musica" : "Reproducir musica"}
+      >
+        {isAudioPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+        {isAudioPlaying ? "Pausar musica" : "Reproducir musica"}
+      </button>
 
       {/* Floating hearts */}
       <FloatingHearts />
@@ -202,6 +308,18 @@ export default function InvitacionClient({ invitado }: { invitado: Invitado }) {
               </div>
               <p className="text-gray-600">5:00 PM</p>
             </div>
+
+            {/* Boton ver ubicacion */}
+            <a
+              href="https://maps.app.goo.gl/ZzjRFWq6Pds1MKKU6?g_st=aw"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-600 rounded-full text-sm font-medium transition-all duration-300 hover:shadow-md group"
+            >
+              <MapPin className="w-4 h-4" />
+              Ver ubicacion
+              <ExternalLink className="w-3 h-3 opacity-60 group-hover:opacity-100 transition-opacity" />
+            </a>
           </div>
         </div>
 
@@ -239,6 +357,18 @@ export default function InvitacionClient({ invitado }: { invitado: Invitado }) {
               </div>
               <p className="text-gray-600">6:30 PM</p>
             </div>
+
+            {/* Boton ver ubicacion */}
+            <a
+              href="https://maps.app.goo.gl/pCAUdrzZXMzXRLSj8"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-full text-sm font-medium transition-all duration-300 hover:shadow-md group"
+            >
+              <MapPin className="w-4 h-4" />
+              Ver ubicacion
+              <ExternalLink className="w-3 h-3 opacity-60 group-hover:opacity-100 transition-opacity" />
+            </a>
           </div>
         </div>
 
