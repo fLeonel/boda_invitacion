@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
+/* 🌍 Variables base */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fdfbf7;
+  --foreground: #2c2c2c;
+
+  --gold: #d4af37;
+  --gold-soft: #e5d3a3;
 }
 
 @theme inline {
@@ -12,6 +16,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* 🌙 Dark mode (puedes ignorarlo por ahora si quieres) */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -19,8 +24,175 @@
   }
 }
 
+/* 🧱 Base */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, sans-serif;
+}
+
+/* 💍 HOME LAYOUT */
+.home {
+  min-height: 100dvh;
+  background:
+    radial-gradient(ellipse at 15% 60%, rgba(212, 175, 55, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+    linear-gradient(160deg, #fffdf8 0%, #fdf8f0 55%, #fdfbf7 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  padding: 32px 20px;
+}
+
+/* 💎 Anillo 3D */
+.ring3d {
+  width: 60vh;
+  max-width: 220px;
+  height: 30vh;
+  maxheight: 220px;
+  display: block;
+}
+
+.title {
+  font-size: clamp(3rem, 8vw, 4.4rem);
+  color: var(--gold);
+  font-family: var(--font-playfair), serif;
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  text-wrap: balance;
+}
+
+/* 🎩 Hero + tagline */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 📝 Subtexto */
+.tagline {
+  color: #8a7050;
+  font-size: 0.95rem;
+  max-width: 300px;
+  letter-spacing: 0.01em;
+}
+
+/* ✦ Divisor ornamental */
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--gold-soft);
+  font-size: 0.95rem;
+  user-select: none;
+}
+
+.ornament::before,
+.ornament::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold-soft), transparent);
+}
+
+/* 💌 Card */
+.card {
+  background: rgba(255, 253, 248, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 28px;
+  padding: 32px 28px 28px;
+  width: 100%;
+  max-width: 340px;
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.85) inset,
+    0 20px 60px rgba(212, 175, 55, 0.12),
+    0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.card-title {
+  font-family: var(--font-playfair), serif;
+  font-size: 1.3rem;
+  color: #5a3e1b;
+  font-weight: 600;
+  margin-bottom: 4px;
+  letter-spacing: 0.01em;
+}
+
+.card-hint {
+  font-size: 0.82rem;
+  color: #a08a58;
+  margin-bottom: 20px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ❌ Error */
+.error-msg {
+  font-size: 0.85rem;
+  color: #8b2000;
+  background: rgba(139, 32, 0, 0.06);
+  border: 1px solid rgba(139, 32, 0, 0.14);
+  border-radius: 10px;
+  padding: 10px 14px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* 📋 Formulario */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* ✍️ Input */
+.form input {
+  padding: 14px 16px;
+  border: 1.5px solid color-mix(in srgb, var(--gold-soft) 80%, #ffffff);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #3a2f1a;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-align: center;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.form input::placeholder {
+  color: #a08a58;
+}
+
+.form input:focus {
+  border-color: var(--gold);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--gold) 18%, transparent),
+    0 10px 22px rgba(212, 175, 55, 0.18);
+  transform: translateY(-1px);
+}
+
+/* 🔘 Botón */
+.form button {
+  background: linear-gradient(135deg, #d4af37, #b8962e);
+  color: white;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
 }
