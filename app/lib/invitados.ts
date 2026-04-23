@@ -309,4 +309,16 @@ export const invitados: Invitado[] = [
     apellido: "Batzini",
     invitados: 3,
   },
+  {
+    id: "yuvicza-cabrera",
+    nombre: "Yuvicza",
+    apellido: "Cabrera",
+    invitados: 2,
+  },
+  {
+    id: "kevin-casiano",
+    nombre: "Kevin",
+    apellido: "Casiano",
+    invitados: 4,
+  },
 ];
