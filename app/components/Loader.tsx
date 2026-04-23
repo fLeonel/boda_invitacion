@@ -1,6 +1,23 @@
 "use client";
 
 import { useEffect } from "react";
+import type { HTMLAttributes } from "react";
+
+type ModelViewerProps = HTMLAttributes<HTMLElement> & {
+  src?: string;
+  "auto-rotate"?: boolean;
+  "auto-rotate-delay"?: string;
+  "rotation-per-second"?: string;
+  "camera-controls"?: boolean;
+  "disable-zoom"?: boolean;
+  exposure?: string;
+  "shadow-intensity"?: string;
+  "environment-image"?: string;
+  "camera-orbit"?: string;
+  "camera-target"?: string;
+};
+
+const ModelViewer = "model-viewer" as unknown as React.FC<ModelViewerProps>;
 
 export default function Loader() {
   useEffect(() => {
@@ -9,7 +26,7 @@ export default function Loader() {
 
   return (
     <div className="loader-container">
-      <model-viewer
+      <ModelViewer
         src="/3dring.glb"
         auto-rotate
         auto-rotate-delay="0"
