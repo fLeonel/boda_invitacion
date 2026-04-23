@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { Calendar, Clock, MapPin, Heart, Send, Sparkles, Church, PartyPopper, ExternalLink, Pause, Play } from "lucide-react";
+import { Calendar, Clock, MapPin, Heart, Send, Sparkles, Church, PartyPopper, ExternalLink, Pause, Play, Mail } from "lucide-react";
 
 type Invitado = {
   nombre: string;
@@ -392,6 +392,27 @@ export default function InvitacionClient({ invitado }: { invitado: Invitado }) {
           <span className="text-gray-500 text-sm">
             {invitado.invitados === 1 ? "persona" : "personas"}
           </span>
+        </div>
+
+        <div className="mt-10 rounded-2xl border border-amber-100 bg-linear-to-br from-amber-50/90 via-white to-rose-50/90 px-6 py-7 text-center shadow-lg shadow-amber-100/40 animate-[fadeIn_1s_ease-out_1.65s_both] relative overflow-hidden">
+          <Sparkles className="absolute -top-2 left-5 h-6 w-6 text-amber-200" />
+          <Heart className="absolute -bottom-2 right-5 h-8 w-8 fill-rose-100 text-rose-100" />
+
+          <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-md shadow-amber-100/60">
+            <Mail className="h-5 w-5 text-amber-500" />
+          </div>
+
+          <p className="text-xs uppercase tracking-[0.28em] text-amber-500 mb-3">
+            Lluvia de sobres
+          </p>
+          <p className="font-serif text-2xl italic text-gray-800">
+            Tu presencia es nuestro mejor regalo
+          </p>
+          <p className="mt-3 text-gray-600 leading-relaxed">
+            Si deseas acompañarnos con un detalle, sera recibido con mucho carino,
+            ya sea en regalo o en efectivo. Pero, sobre todo, lo que mas atesoramos
+            es compartir este dia contigo.
+          </p>
         </div>
 
         {/* Boton */}
